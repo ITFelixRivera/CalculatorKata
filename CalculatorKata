@@ -1,0 +1,132 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите выражение: ");
+        String input = scanner.nextLine();
+        String result = calc(input);
+        System.out.println("Результат: " + result);
+    }
+
+    public static String calc(String input) {
+        String[] parts = input.split(" ");
+
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Некорректное выражение");
+        }
+
+        String operand1 = parts[0];
+        String operation = parts[1];
+        String operand2 = parts[2];
+
+        if (isArabicNumber(operand1) && isArabicNumber(operand2)) {
+            int num1 = Integer.parseInt(operand1);
+            int num2 = Integer.parseInt(operand2);
+
+            int result;
+            switch (operation) {
+                case "+":
+                    result = num1 + num2;
+                    break;
+                case "-":
+                    result = num1 - num2;
+                    break;
+                case "*":
+                    result = num1 * num2;
+                    break;
+                case "/":
+                    result = num1 / num2;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Некорректная операция");
+            }
+
+            return String.valueOf(result);
+        } else if (isRomanNumber(operand1) && isRomanNumber(operand2)) {
+            int num1 = romanToDecimal(operand1);
+            int num2 = romanToDecimal(operand2);
+
+            int result;
+            switch (operation) {
+                case "+":
+                    result = num1 + num2;
+                    break;
+                case "-":
+                    result = num1 - num2;
+                    break;
+                case "*":
+                    result = num1 * num2;
+                    break;
+                case "/":
+                    result = num1 / num2;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Некорректная операция");
+            }
+
+            return decimalToRoman(result);
+        } else {
+            throw new IllegalArgumentException("Числа разных типов");
+        }
+    }
+
+    public static boolean isArabicNumber(String text) {
+        try {
+            int num = Integer.parseInt(text);
+            return num >= 1 && num <= 10;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isRomanNumber(String text) {
+        String pattern = "^[IVX]+$";
+        return text.matches(pattern);
+    }
+
+    public static int romanToDecimal(String roman) {
+        Map<Character, Integer> values = new HashMap<>();
+        values.put('I', 1);
+        values.put('V', 5);
+        values.put('X', 10);
+
+        int result = 0;
+        int prevValue = 0;
+        for (int i = roman.length() - 1; i >= 0; i--) {
+            int value = values.get(roman.charAt(i));
+            if (value >= prevValue) {
+                result += value;
+            } else {
+                result -= value;
+            }
+            prevValue = value;
+        }
+
+        return result;
+    }
+
+    public static String decimalToRoman(int num) {
+        if (num < 1 || num > 3999) {
+            throw new IllegalArgumentException("Число выходит за границы диапазона");
+        }
+
+        StringBuilder RomanNumeral = new StringBuilder();
+        String[] numeralSymbols = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        int[] numeralValues = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+
+        int i = 0;
+        while (num > 0) {
+            if (num >= numeralValues[i]) {
+                RomanNumeral.append(numeralSymbols[i]);
+                num -= numeralValues[i];
+            } else {
+                i++;
+            }
+        }
+
+        return RomanNumeral.toString();
+    }
+}
